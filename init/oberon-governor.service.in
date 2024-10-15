@@ -1,0 +1,8 @@
+[Unit]
+Description=Oberon GPU governor
+
+[Service]
+ExecStart=@CMAKE_INSTALL_PREFIX@/bin/oberon-governor
+
+[Install]
+WantedBy=multi-user.target
