@@ -3,6 +3,9 @@ Description=Oberon GPU governor
 
 [Service]
 ExecStart=@CMAKE_INSTALL_PREFIX@/bin/oberon-governor
+# Service is sometimes started before amdgpu finishes loading, allow leeway for these cases
+RestartSec=5
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
