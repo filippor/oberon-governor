@@ -17,7 +17,7 @@ add_executable(oberon-governor
 )
 target_compile_definitions(oberon-governor PUBLIC GOVERNOR_VERSION="${PROJECT_VERSION}")
 target_include_directories(oberon-governor PUBLIC ${LIBDRM_INCLUDE_DIRS} ${LIBDRM_AMDGPU_INCLUDE_DIRS})
-target_link_libraries(oberon-governor ${LIBDRM_LIBRARIES} ${LIBDRM_AMDGPU_LIBRARIES})
+target_link_libraries(oberon-governor ${LIBDRM_LIBRARIES} ${LIBDRM_AMDGPU_LIBRARIES} yaml-cpp::yaml-cpp)
 install(
 	TARGETS oberon-governor
 	DESTINATION "bin"
@@ -30,3 +30,20 @@ install(
 	DESTINATION "/usr/lib/systemd/system"
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
+
+# Config file
+configure_file(init/oberon-config.yaml.in oberon-config.yaml)
+install(
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/oberon-config.yaml"
+	DESTINATION "/etc/"
+	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+)
+
+include(FetchContent)
+
+FetchContent_Declare(
+  yaml-cpp
+  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(yaml-cpp)
