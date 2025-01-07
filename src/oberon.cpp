@@ -8,14 +8,21 @@
 #include <unistd.h>
 #include <xf86drm.h>
 #include "oberon.hpp"
+#include "yaml-cpp/yaml.h"
 
 const Oberon::PCIID Oberon::ids[] = {
 	{ 0x1002, 0x13fe }, // CYAN_SKILLFISH2
 };
 
-const Oberon::OPP Oberon::opps[] = { // TODO: Validate?
-	{ 1000, 700 }, // Minimum
-	{ 2000, 900 }, // Maximum
+const Oberon::OPP Oberon::opps[] = { 
+    { 
+      	YAML::LoadFile("/etc/oberon-config.yaml")["opps"][0]["frequency"][0]["min"].as<int>(), 
+        YAML::LoadFile("/etc/oberon-config.yaml")["opps"][1]["voltage"][0]["min"].as<int>()
+    },  
+    { 
+      	YAML::LoadFile("/etc/oberon-config.yaml")["opps"][0]["frequency"][1]["max"].as<int>(), 
+        YAML::LoadFile("/etc/oberon-config.yaml")["opps"][1]["voltage"][1]["max"].as<int>()
+    } 
 };
 
 void Oberon::sampleThread() {
