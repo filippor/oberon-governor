@@ -10,7 +10,10 @@ Testing is only performed on the ASRock BC-250.
 - A C++ toolchain
 - libdrm
 
+## Configuration
+
+- A configuration file is installed to /etc/oberon-config.yaml. This allows the maximum and minimum voltage and frequency to be set.
+
 ## Limitations
 
-- No configuration options are available.
 - Frequency ramp up under load is a bit slow.
