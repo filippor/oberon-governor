@@ -1,0 +1,7 @@
+opps:
+  - frequency:
+    - min: 1000
+    - max: 2000
+  - voltage:
+    - min: 1000
+    - max: 1000
