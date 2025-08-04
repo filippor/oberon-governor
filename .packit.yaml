@@ -14,6 +14,8 @@ jobs:
   trigger: commit
   branch: main
   enable_net: true
+  owner: filippor
+  project: bazzite
 
 - job: copr_build
   identifier: release
