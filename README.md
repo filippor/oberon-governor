@@ -1,4 +1,5 @@
 Forked from https://gitlab.com/mothenjoyer69/oberon-governor to add spec file and publish on copr
+
 # Oberon GPU Governor
 
 A simple daemon for AMD Oberon based systems that automatically governs GPU voltage and frequency based on load and temperature.
