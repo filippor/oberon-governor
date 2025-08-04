@@ -7,7 +7,7 @@ License:        MIT
 URL:            https://gitlab.com/mothenjoyer69/oberon-governor
 Source0:        oberon-governor-v0.0.1.tar.gz
 
-BuildRequires:  libdrm-devel cmake make g++ git
+BuildRequires:  libdrm-devel cmake make g++ git yaml-cpp-devel
 
 %description
 A simple daemon for AMD Oberon based systems that automatically governs GPU voltage and frequency based on load and temperature.
