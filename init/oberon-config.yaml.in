@@ -3,5 +3,5 @@ opps:
     - min: 1000
     - max: 2000
   - voltage:
-    - min: 1000
+    - min: 700
     - max: 1000

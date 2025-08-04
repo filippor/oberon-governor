@@ -1,0 +1,18 @@
+# See the documentation for more information:
+# https://packit.dev/docs/configuration/
+
+specfile_path: oberon-governor.spec
+
+# name in upstream package repository or registry (e.g. in PyPI)
+upstream_package_name: oberon-governor
+# downstream (Fedora) RPM package name
+downstream_package_name: oberon-governor
+
+jobs:
+- job: copr_build
+  identifier: main
+  trigger: commit
+  branch: main
+  owner: filippor
+  project: bazzite
+
