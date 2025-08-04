@@ -13,10 +13,12 @@ jobs:
   identifier: main
   trigger: commit
   branch: main
+  enable_net: true
 
 - job: copr_build
   identifier: release
   trigger: release
   owner: filippor
   project: bazzite
+  enable_net: true
 
