@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBDRM REQUIRED libdrm)
 pkg_check_modules(LIBDRM_AMDGPU REQUIRED libdrm_amdgpu)
+pkg_check_modules(YAML_CPP REQUIRED yaml-cpp)
 
 # Executable
 add_executable(oberon-governor
@@ -39,11 +40,3 @@ install(
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-include(FetchContent)
-
-FetchContent_Declare(
-  yaml-cpp
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG master
-)
-FetchContent_MakeAvailable(yaml-cpp)
