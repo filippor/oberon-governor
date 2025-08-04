@@ -1,6 +1,5 @@
 # See the documentation for more information:
 # https://packit.dev/docs/configuration/
-
 specfile_path: oberon-governor.spec
 
 # name in upstream package repository or registry (e.g. in PyPI)
