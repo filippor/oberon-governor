@@ -5,3 +5,15 @@ opps:
   - voltage:
     - min: 700
     - max: 1000
+  - steps: 4
+
+governor:
+  polling_delay_ms: 50
+  up_threshold_high: 75
+  up_threshold_low: 45
+  down_threshold_high: 35
+  down_threshold_low: 10
+  gfx_temp_soft_lim: 85
+  gfx_temp_hard_lim: 95
+  soc_temp_hard_lim: 90
+  overheat_reset_ms: 5000

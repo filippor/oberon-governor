@@ -16,6 +16,13 @@ jobs:
   owner: filippor
   project: bazzite
 
+jobs:
+- job: copr_build
+  identifier: pull_request
+  trigger: pull_request
+  branch: main
+  enable_net: true
+
 - job: copr_build
   identifier: release
   trigger: release

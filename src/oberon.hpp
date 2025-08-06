@@ -8,6 +8,7 @@
 #include <fstream>
 #include <mutex>
 #include <thread>
+#include <vector>
 
 #define BIT(x)	(1U << (x))
 
@@ -77,8 +78,19 @@ private:
 	struct OPP {
 		int frequency;
 		int voltage;
-	} static const opps[];
+	};
+	std::vector<OPP> opps;
+
+	struct OPP_Range {
+		int frequency_min;
+		int frequency_max;
+		int voltage_min;
+		int voltage_max;
+		int steps;
+	};
+	OPP_Range opp_range; // A single OPP_Range object instead of a vector of OPPs
 	int opp;
+
 
 	amdgpu_device_handle amdgpu_handle;
 
@@ -100,6 +112,7 @@ public:
 	};
 
 	int getLoad();
+	int getPower();
 	int getOpps();
 	Temperature getTemperature();
 	void setOpp(int opp);
