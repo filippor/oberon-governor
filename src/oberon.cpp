@@ -17,11 +17,6 @@ const Oberon::PCIID Oberon::ids[] = {
 
 void Oberon::sampleThread() {
 	while (run.load()) {
-		YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
-		for (const auto& node : config["opps"]) {
-			opps.push_back({node["frequency"].as<int>(), node["voltage"].as<int>()});
-		}
-
 		const std::chrono::time_point start = std::chrono::system_clock::now();
 
 		uint32_t reg;
@@ -37,16 +32,6 @@ void Oberon::sampleThread() {
 	}
 }
 
-// int Oberon::getLoad() {
-// 	int load = 0;
-//
-// 	busy_sample_mutex.lock();
-// 	for (const bool busy : busy_sample_buffer)
-// 		load += busy;
-// 	busy_sample_mutex.unlock();
-//
-// 	return load * (100 / (OB_ACTIVE_SAMPLE_BUF_MS / OB_ACTIVE_SAMPLE_DELAY_MS));
-// }
 
 int Oberon::getLoad() {
 	int busy_count = 0;
@@ -100,11 +85,11 @@ void Oberon::setOpp(int opp) {
 Oberon::Oberon() {
 	// Dynamically load OPP range from the YAML file
 	YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
-	opp_range.frequency_min = config["opps"][0]["frequency"]["min"].as<int>();
-	opp_range.frequency_max = config["opps"][0]["frequency"]["max"].as<int>();
-	opp_range.voltage_min = config["opps"][0]["voltage"]["min"].as<int>();
-	opp_range.voltage_max = config["opps"][0]["voltage"]["max"].as<int>();
-	opp_range.steps = config["opps"][0]["steps"].as<int>();
+	opp_range.frequency_min = config["opps"]["frequency"]["min"].as<int>();
+	opp_range.frequency_max = config["opps"]["frequency"]["max"].as<int>();
+	opp_range.voltage_min = config["opps"]["voltage"]["min"].as<int>();
+	opp_range.voltage_max = config["opps"]["voltage"]["max"].as<int>();
+	opp_range.steps = config["opps"]["steps"].as<int>();
 
 
 	// Get DRM device
