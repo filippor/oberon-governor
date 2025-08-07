@@ -35,18 +35,26 @@ void Governor::run() {
 			// Intelligent, granular load-based frequency control
 			if (load >= up_threshold_high) {
 				// Aggressive scale up
-				opp = opp_c;
+				up++; down = 0;
+				if (up > 5) { // Require 3 consecutive high-load polls to scale up
+					opp = opp_c;
+				}
 			} else if (load >= up_threshold_low) {
 				// Gradual scale up
-				if (opp < opp_c) {
+				up++; down = 0;
+				if (opp < opp_c && up > 3) {
 					opp++;
 				}
 			} else if (load <= down_threshold_low) {
 				// Aggressive scale down
-				opp = 0;
+				down++; up = 0;
+				if (down > 10) {
+					opp = 0;
+				}
 			} else if (load <= down_threshold_high) {
 				// Gradual scale down
-				if (opp > 0) {
+				down++; up = 0;
+				if (opp > 0 && down > 5) {
 					opp--;
 				}
 			}
