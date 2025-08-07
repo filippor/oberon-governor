@@ -27,6 +27,7 @@ void Governor::run() {
 				}
 			} else {
 				// Proactively scale down one OPP to cool down
+				up = -5;
 				opp = std::max(opp - 1, 0);
 			}
 		} else if (overheat) {
