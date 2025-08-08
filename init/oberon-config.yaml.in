@@ -2,21 +2,21 @@ opps:
   # This section configures the available performance states (Operating Performance Points).
   # The governor will scale the GPU frequency and voltage between these min and max values.
   frequency:
-    min: 1000    # Minimum GPU core frequency in MHz
+    min: 1000   # Minimum GPU core frequency in MHz
     max: 2000   # Maximum GPU core frequency in MHz
   voltage:
     min: 700    # Minimum GPU voltage in mV
     max: 1000   # Maximum GPU voltage in mV
-  steps: 24     # Number of steps between min and max, creating 25 OPPs (0 to 24)
+  steps: 9      # Number of steps between min and max, creating 10 OPPs (0 to 9)
 
 governor:
-  polling_delay_ms:   100   #evaluation windows
-  up_threshold_high:   80   #load to jump to maximum
-  up_threshold_low:    65   #load to jump one step up
-  down_threshold_high: 30   #load to jump one step up
-  down_threshold_low:   5   #load to hump to min
-  gfx_temp_soft_lim:   79   #temperature to jump down 1 step
-  gfx_temp_hard_lim:   90   #temperature to jump to min
-  soc_temp_hard_lim:   90   #temperature to jump to min
-  overheat_reset_ms: 5000   #time to cool down after hard limit
+  polling_delay_ms:     50   #evaluation windows
+  up_threshold_high:    85   #load to jump to maximum
+  up_threshold_low:     70   #load to jump one step up
+  down_threshold_high:  45   #load to jump one step up
+  down_threshold_low:    5   #load to hump to min
+  gfx_temp_soft_lim:    80   #temperature to jump down 1 step
+  gfx_temp_hard_lim:    90   #temperature to jump to min
+  soc_temp_hard_lim:    90   #temperature to jump to min
+  overheat_reset_ms: 10000   #time to cool down after hard limit
 

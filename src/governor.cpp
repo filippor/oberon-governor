@@ -7,7 +7,7 @@
 #include "oberon.hpp"
 
 void Governor::run() {
-	int load, move = 0, overheat = 0, old_opp;
+	int load, move = 0, old_opp;
 	bool overheat_warned = false;
 	while (r) {
 		const std::chrono::time_point start = std::chrono::system_clock::now();
@@ -19,42 +19,46 @@ void Governor::run() {
 		if (temp.gfx >= gfx_temp_soft_lim || temp.soc >= soc_temp_hard_lim) { // Use soft limit for proactive scaling
 			if (temp.gfx >= gfx_temp_hard_lim || temp.soc >= soc_temp_hard_lim) { // Use hard limit for emergency throttle
 				opp = 0;
-				overheat = (overheat_reset_ms / polling_delay_ms);
+				move = -(overheat_reset_ms / polling_delay_ms);
 				if (!overheat_warned) {
 					std::cerr << std::format("[{}] GPU overheated, throttling - Silencing future warnings of this type", std::chrono::system_clock::now()) << std::endl;
 					overheat_warned = true;
 				}
 			} else {
 				// Proactively scale down one OPP to cool down
+				move = -(overheat_reset_ms / polling_delay_ms);
 				opp = std::max(opp - 1, 0);
 			}
-		} else if (overheat) {
-			overheat--;
 		} else {
-			// Intelligent, granular load-based frequency control
-			if (load >= up_threshold_high) {
-				// Aggressive scale up
-				move = std::max(0,move +1);
-				if (move > 5) { // Require 10 consecutive high-load polls to scale up to max
-					opp = opp_c;
-				}
-			} else if (load >= up_threshold_low) {
-				// Gradual scale up
-				move++;
-				if (opp < opp_c && move > 5) {// Require 5 consecutive high-load polls to scale up
-					opp++;
-				}
-			} else if (opp && load <= down_threshold_low) {
-				// Aggressive scale down
-				move --;
-				if (move < -20) {// Require 20 consecutive low-load polls to scale down to min
-					opp = 0;
-				}
+			if (load >= up_threshold_low) {
+				 move= move = std::min(25,move + 1) ;
+				 if (opp < opp_c && move > 5) { // Require 5 consecutive high-load polls to scale up
+					// Intelligent, granular load-based frequency control
+					if (load >= up_threshold_high) {
+							// Aggressive scale up
+							move = std::max(0,move);
+							opp = opp_c;
+					} else{
+						// Gradual scale up
+							opp++;
+					}
+				 }
 			} else if (load <= down_threshold_high) {
 				// Gradual scale down
-				move --;
-				if (opp > 0 && move < -10) {// Require 10 consecutive low-load polls to scale down
-					opp--;
+				move= move = std::max(-15,move -1 ) ;
+				if(opp > 0 && move < -10){// Require 10 consecutive low-load polls to scale down
+					if (load <= down_threshold_low) {
+						// Aggressive scale down
+						opp = 0;
+					} else {// Require 10 consecutive low-load polls to scale down
+						opp--;
+					}
+				}
+			}else {
+				if ( move < 0) {
+					move++;
+				} else if (move > 0) {
+					move--;
 				}
 			}
 		}
@@ -62,9 +66,8 @@ void Governor::run() {
 		// Set OPP and wait for next poll
 		if(opp != old_opp){
 			gpu.setOpp(opp);
-			move = 0;
 		}
-		std::this_thread::sleep_until(start + std::chrono::milliseconds(polling_delay_ms));
+		std::this_thread::sleep_until(start + std::chrono::milliseconds(move > 20 ? polling_delay_ms * 10: polling_delay_ms));
 	}
 }
 
