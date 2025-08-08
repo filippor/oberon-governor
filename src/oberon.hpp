@@ -8,6 +8,7 @@
 #include <fstream>
 #include <mutex>
 #include <thread>
+#include <vector>
 
 #define BIT(x)	(1U << (x))
 
@@ -74,11 +75,17 @@ private:
 		uint16_t device;
 	} static const ids[];
 
-	struct OPP {
-		int frequency;
-		int voltage;
-	} static const opps[];
+
+	struct OPP_Range {
+		int frequency_min;
+		int frequency_max;
+		int voltage_min;
+		int voltage_max;
+		int steps;
+	};
+	OPP_Range opp_range;
 	int opp;
+
 
 	amdgpu_device_handle amdgpu_handle;
 
