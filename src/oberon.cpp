@@ -49,13 +49,6 @@ int Oberon::getOpps() {
 	return opp_range.steps + 1; // +1 to account for OPP 0
 }
 
-int Oberon::getPower() {
-	GPUMetrics buf;
-	metrics.read(reinterpret_cast<char*>(&buf), sizeof(GPUMetrics));
-	metrics.seekg(0);
-	// Return average GPU power from the metrics struct
-	return buf.average_gfx_power;
-}
 
 Oberon::Temperature Oberon::getTemperature() {
 	GPUMetrics buf;

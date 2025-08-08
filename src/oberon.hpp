@@ -75,11 +75,6 @@ private:
 		uint16_t device;
 	} static const ids[];
 
-	struct OPP {
-		int frequency;
-		int voltage;
-	};
-	std::vector<OPP> opps;
 
 	struct OPP_Range {
 		int frequency_min;
@@ -88,7 +83,7 @@ private:
 		int voltage_max;
 		int steps;
 	};
-	OPP_Range opp_range; // A single OPP_Range object instead of a vector of OPPs
+	OPP_Range opp_range;
 	int opp;
 
 
@@ -112,7 +107,6 @@ public:
 	};
 
 	int getLoad();
-	int getPower();
 	int getOpps();
 	Temperature getTemperature();
 	void setOpp(int opp);

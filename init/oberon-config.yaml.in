@@ -7,16 +7,16 @@ opps:
   voltage:
     min: 700    # Minimum GPU voltage in mV
     max: 1000   # Maximum GPU voltage in mV
-  steps: 20     # Number of steps between min and max, creating 21 OPPs (0 to 20)
+  steps: 24     # Number of steps between min and max, creating 25 OPPs (0 to 24)
 
 governor:
-  polling_delay_ms: 100
-  up_threshold_high: 75
-  up_threshold_low: 45
-  down_threshold_high: 35
-  down_threshold_low: 10
-  gfx_temp_soft_lim: 85
-  gfx_temp_hard_lim: 95
-  soc_temp_hard_lim: 90
-  overheat_reset_ms: 5000
+  polling_delay_ms:   100   #evaluation windows
+  up_threshold_high:   80   #load to jump to maximum
+  up_threshold_low:    65   #load to jump one step up
+  down_threshold_high: 30   #load to jump one step up
+  down_threshold_low:   5   #load to hump to min
+  gfx_temp_soft_lim:   79   #temperature to jump down 1 step
+  gfx_temp_hard_lim:   90   #temperature to jump to min
+  soc_temp_hard_lim:   90   #temperature to jump to min
+  overheat_reset_ms: 5000   #time to cool down after hard limit
 

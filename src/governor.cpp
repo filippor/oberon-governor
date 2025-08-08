@@ -7,14 +7,13 @@
 #include "oberon.hpp"
 
 void Governor::run() {
-	int load, power, up = 0, down = 0, overheat = 0;
+	int load, move = 0, overheat = 0, old_opp;
 	bool overheat_warned = false;
 	while (r) {
 		const std::chrono::time_point start = std::chrono::system_clock::now();
-
+		old_opp = opp;
 		Oberon::Temperature temp = gpu.getTemperature();
 		load = gpu.getLoad();
-		power = gpu.getPower(); // Assuming getPower() is implemented as discussed
 
 		// Proactive Thermal Management
 		if (temp.gfx >= gfx_temp_soft_lim || temp.soc >= soc_temp_hard_lim) { // Use soft limit for proactive scaling
@@ -27,7 +26,6 @@ void Governor::run() {
 				}
 			} else {
 				// Proactively scale down one OPP to cool down
-				up = -5;
 				opp = std::max(opp - 1, 0);
 			}
 		} else if (overheat) {
@@ -36,33 +34,36 @@ void Governor::run() {
 			// Intelligent, granular load-based frequency control
 			if (load >= up_threshold_high) {
 				// Aggressive scale up
-				up++; down = 0;
-				if (up > 5) { // Require 3 consecutive high-load polls to scale up
+				move = std::max(0,move +1);
+				if (move > 5) { // Require 10 consecutive high-load polls to scale up to max
 					opp = opp_c;
 				}
 			} else if (load >= up_threshold_low) {
 				// Gradual scale up
-				up++; down = 0;
-				if (opp < opp_c && up > 3) {
+				move++;
+				if (opp < opp_c && move > 5) {// Require 5 consecutive high-load polls to scale up
 					opp++;
 				}
-			} else if (load <= down_threshold_low) {
+			} else if (opp && load <= down_threshold_low) {
 				// Aggressive scale down
-				down++; up = 0;
-				if (down > 10) {
+				move --;
+				if (move < -20) {// Require 20 consecutive low-load polls to scale down to min
 					opp = 0;
 				}
 			} else if (load <= down_threshold_high) {
 				// Gradual scale down
-				down++; up = 0;
-				if (opp > 0 && down > 5) {
+				move --;
+				if (opp > 0 && move < -10) {// Require 10 consecutive low-load polls to scale down
 					opp--;
 				}
 			}
 		}
 
 		// Set OPP and wait for next poll
-		gpu.setOpp(opp);
+		if(opp != old_opp){
+			gpu.setOpp(opp);
+			move = 0;
+		}
 		std::this_thread::sleep_until(start + std::chrono::milliseconds(polling_delay_ms));
 	}
 }
