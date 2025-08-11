@@ -62,7 +62,7 @@ Oberon::Temperature Oberon::getTemperature() {
 void Oberon::setOpp(int opp) {
 	if (this->opp == opp)
 		return;
-
+	//std::cerr << std::format("[{}] Setting opp {}", std::chrono::system_clock::now(),opp) << std::endl;
 	// Calculate frequency and voltage using linear interpolation
 	double freq_step = (double)(opp_range.frequency_max - opp_range.frequency_min) / opp_range.steps;
 	double volt_step = (double)(opp_range.voltage_max - opp_range.voltage_min) / opp_range.steps;
