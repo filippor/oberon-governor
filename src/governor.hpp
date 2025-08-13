@@ -3,10 +3,10 @@
 
 class Governor {
 private:
-	class Oberon& gpu;
+	class Oberon& _gpu;
 	bool r = true;
-	int opp = 0;
-	int opp_c;
+	int _opp = -1;
+	int _opp_count;
 
 	int polling_delay_ms;
 	int up_threshold_high;

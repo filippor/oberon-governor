@@ -84,7 +84,7 @@ private:
 		int steps;
 	};
 	OPP_Range opp_range;
-	int opp = -1; //will be setted to 0 in constructor
+	int _opp = -1; //will be setted to 0 in constructor
 
 
 	amdgpu_device_handle amdgpu_handle;

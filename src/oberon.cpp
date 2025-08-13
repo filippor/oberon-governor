@@ -1,6 +1,7 @@
 #include <amdgpu.h>
 #include <chrono>
 #include <fcntl.h>
+#include <vector>
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
@@ -60,21 +61,22 @@ Oberon::Temperature Oberon::getTemperature() {
 }
 
 void Oberon::setOpp(int opp) {
-	if (this->opp == opp)
+	if (this->_opp == opp)
 		return;
 	//std::cerr << std::format("[{}] Setting opp {}", std::chrono::system_clock::now(),opp) << std::endl;
 	// Calculate frequency and voltage using linear interpolation
-	double freq_step = (double)(opp_range.frequency_max - opp_range.frequency_min) / opp_range.steps;
-	double volt_step = (double)(opp_range.voltage_max - opp_range.voltage_min) / opp_range.steps;
+	double freq_step = static_cast<double>(opp_range.frequency_max - opp_range.frequency_min) / opp_range.steps;
+	double volt_step = static_cast<double>(opp_range.voltage_max - opp_range.voltage_min) / opp_range.steps;
 
-	int frequency = opp_range.frequency_min + (int)(opp * freq_step);
-	int voltage = opp_range.voltage_min + (int)(opp * volt_step);
+	int frequency = opp_range.frequency_min + static_cast<int>(opp * freq_step);
+	int voltage = opp_range.voltage_min + static_cast<int>(opp * volt_step);
 
 	ctl << "vc 0 " + std::to_string(frequency) + " " + std::to_string(voltage) << std::endl;
 	ctl << "c" << std::endl;
-	this->opp = opp;
+	this->_opp = opp;
 }
 
+const int MAX_DRM_DEVICES = 16; 
 Oberon::Oberon() {
 	// Dynamically load OPP range from the YAML file
 	YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
@@ -98,7 +100,10 @@ Oberon::Oberon() {
 	int count = drmGetDevices(nullptr, 0);
 	if (count <= 0)
 		throw std::runtime_error("Failed to detect DRM devices");
-	drmDevicePtr devices[count];
+	if (count > MAX_DRM_DEVICES) {
+        throw std::runtime_error("Too many DRM devices detected. Increase MAX_DRM_DEVICES.");
+    }
+	drmDevicePtr devices[MAX_DRM_DEVICES];
 	if (drmGetDevices(devices, count) < 0)
 		throw std::runtime_error("Failed to get DRM device list");
 
@@ -110,7 +115,7 @@ Oberon::Oberon() {
 			continue;
 
 		bool ok = false;
-		for (int j = 0; j < sizeof(ids) / sizeof(PCIID); j++)
+		for (size_t j = 0; j < sizeof(ids) / sizeof(PCIID); j++)
 			if (devices[i]->deviceinfo.pci->vendor_id == ids[j].vendor &&
 			    devices[i]->deviceinfo.pci->device_id == ids[j].device) {
 				ok = true;

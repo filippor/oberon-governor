@@ -7,6 +7,22 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBDRM REQUIRED libdrm)
 pkg_check_modules(LIBDRM_AMDGPU REQUIRED libdrm_amdgpu)
 
+# Try to find the system-installed yaml-cpp package first.
+find_package(yaml-cpp)
+
+# If the package is not found, use FetchContent as a fallback.
+if(NOT yaml-cpp_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+      yaml-cpp
+      GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
+      GIT_TAG master
+    )
+    FetchContent_MakeAvailable(yaml-cpp)
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra  -Wpedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wnull-dereference -Wsign-compare")
+
 # Executable
 add_executable(oberon-governor
 	src/governor.cpp
@@ -39,10 +55,4 @@ install(
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 )
 
-include(FetchContent)
-FetchContent_Declare(
-  yaml-cpp
-  GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
-  GIT_TAG master
-)
-FetchContent_MakeAvailable(yaml-cpp)
+

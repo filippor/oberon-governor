@@ -13,6 +13,24 @@ const std::string help_text =
 Governor* g;
 
 void stop(int signal) {
+    switch (signal) {
+        case SIGHUP:
+            std::cerr << "Received SIGHUP (Hangup). Shutting down gracefully." << std::endl;
+            break;
+        case SIGINT:
+            std::cerr << "Received SIGINT (Interrupt). Shutting down gracefully." << std::endl;
+            break;
+        case SIGQUIT:
+            std::cerr << "Received SIGQUIT (Quit). Shutting down gracefully." << std::endl;
+            break;
+        case SIGTERM:
+            std::cerr << "Received SIGTERM (Termination). Shutting down gracefully." << std::endl;
+            break;
+        default:
+            std::cerr << "Received unknown signal (" << signal << "). Shutting down." << std::endl;
+            break;
+    }
+
 	if (g)
 		g->stop();
 }
@@ -22,7 +40,7 @@ int main(int argc, char *argv[]) {
 		bool found = false;
 
 		// Help
-		for (const std::string& a : {"-h", "--help"}) {
+		for (const std::string a : {"-h", "--help"}) {
 			if (a == argv[i]) {
 				found = true;
 				break;
