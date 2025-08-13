@@ -15,6 +15,10 @@ jobs:
   enable_net: true
   owner: filippor
   project: bazzite
+  targets:
+    - fedora-stable
+    - fedora-development
+    - fedora-rawhide
 
 jobs:
 - job: copr_build
@@ -24,6 +28,7 @@ jobs:
   enable_net: true
   targets:
     - fedora-stable
+    - fedora-development
     - fedora-rawhide
 
 - job: copr_build
@@ -32,4 +37,8 @@ jobs:
   owner: filippor
   project: bazzite
   enable_net: true
+  targets:
+    - fedora-stable
+    - fedora-development
+    - fedora-rawhide
 
