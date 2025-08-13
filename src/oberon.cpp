@@ -14,16 +14,6 @@ const Oberon::PCIID Oberon::ids[] = {
 	{ 0x1002, 0x13fe }, // CYAN_SKILLFISH2
 };
 
-const Oberon::OPP Oberon::opps[] = { 
-    { 
-      	YAML::LoadFile("/etc/oberon-config.yaml")["opps"][0]["frequency"][0]["min"].as<int>(), 
-        YAML::LoadFile("/etc/oberon-config.yaml")["opps"][1]["voltage"][0]["min"].as<int>()
-    },  
-    { 
-      	YAML::LoadFile("/etc/oberon-config.yaml")["opps"][0]["frequency"][1]["max"].as<int>(), 
-        YAML::LoadFile("/etc/oberon-config.yaml")["opps"][1]["voltage"][1]["max"].as<int>()
-    } 
-};
 
 void Oberon::sampleThread() {
 	while (run.load()) {
@@ -42,20 +32,23 @@ void Oberon::sampleThread() {
 	}
 }
 
+
 int Oberon::getLoad() {
-	int load = 0;
+	int busy_count = 0;
 
 	busy_sample_mutex.lock();
 	for (const bool busy : busy_sample_buffer)
-		load += busy;
+		busy_count += busy;
 	busy_sample_mutex.unlock();
 
-	return load * (100 / (OB_ACTIVE_SAMPLE_BUF_MS / OB_ACTIVE_SAMPLE_DELAY_MS));
+	// Calculate the percentage load correctly
+	return (busy_count * 100) / busy_sample_buffer.size();
 }
 
 int Oberon::getOpps() {
-	return sizeof(opps) / sizeof(OPP);
+	return opp_range.steps + 1; // +1 to account for OPP 0
 }
+
 
 Oberon::Temperature Oberon::getTemperature() {
 	GPUMetrics buf;
@@ -69,14 +62,38 @@ Oberon::Temperature Oberon::getTemperature() {
 void Oberon::setOpp(int opp) {
 	if (this->opp == opp)
 		return;
+	//std::cerr << std::format("[{}] Setting opp {}", std::chrono::system_clock::now(),opp) << std::endl;
+	// Calculate frequency and voltage using linear interpolation
+	double freq_step = (double)(opp_range.frequency_max - opp_range.frequency_min) / opp_range.steps;
+	double volt_step = (double)(opp_range.voltage_max - opp_range.voltage_min) / opp_range.steps;
 
-	OPP o = opps[opp];
-	ctl << "vc 0 " + std::to_string(o.frequency) + " " + std::to_string(o.voltage) << std::endl;
+	int frequency = opp_range.frequency_min + (int)(opp * freq_step);
+	int voltage = opp_range.voltage_min + (int)(opp * volt_step);
+
+	ctl << "vc 0 " + std::to_string(frequency) + " " + std::to_string(voltage) << std::endl;
 	ctl << "c" << std::endl;
 	this->opp = opp;
 }
 
 Oberon::Oberon() {
+	// Dynamically load OPP range from the YAML file
+	YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
+    YAML::Node opps = config["opps"];
+    if (opps.IsSequence()) {
+        opp_range.frequency_min = opps[0]["frequency"][0]["min"].as<int>();
+	    opp_range.frequency_max = opps[0]["frequency"][1]["max"].as<int>();
+	    opp_range.voltage_min = opps[1]["voltage"][0]["min"].as<int>();
+	    opp_range.voltage_max = opps[1]["voltage"][1]["max"].as<int>();
+        opp_range.steps = 10;
+    } else {
+	    opp_range.frequency_min = opps["frequency"]["min"].as<int>();
+	    opp_range.frequency_max = opps["frequency"]["max"].as<int>();
+	    opp_range.voltage_min = opps["voltage"]["min"].as<int>();
+	    opp_range.voltage_max = opps["voltage"]["max"].as<int>();
+        opp_range.steps = config["opps"]["steps"].as<int>();
+        opp_range.steps = 10;
+    }
+
 	// Get DRM device
 	int count = drmGetDevices(nullptr, 0);
 	if (count <= 0)

@@ -1,4 +1,7 @@
-Forked from https://gitlab.com/mothenjoyer69/oberon-governor to add spec file and publish on copr
+Forked from https://gitlab.com/mothenjoyer69/oberon-governor
+# Changes 
+-add spec file and publish on copr
+-implement multistep and change configuration file
 
 # Oberon GPU Governor
 
