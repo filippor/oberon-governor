@@ -78,12 +78,21 @@ void Oberon::setOpp(int opp) {
 Oberon::Oberon() {
 	// Dynamically load OPP range from the YAML file
 	YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
-	opp_range.frequency_min = config["opps"]["frequency"]["min"].as<int>();
-	opp_range.frequency_max = config["opps"]["frequency"]["max"].as<int>();
-	opp_range.voltage_min = config["opps"]["voltage"]["min"].as<int>();
-	opp_range.voltage_max = config["opps"]["voltage"]["max"].as<int>();
-	opp_range.steps = config["opps"]["steps"].as<int>();
-
+    YAML::Node opps = config["opps"];
+    if (opps.IsSequence()) {
+        opp_range.frequency_min = opps[0]["frequency"][0]["min"].as<int>();
+	    opp_range.frequency_max = opps[0]["frequency"][1]["max"].as<int>();
+	    opp_range.voltage_min = opps[1]["voltage"][0]["min"].as<int>();
+	    opp_range.voltage_max = opps[1]["voltage"][1]["max"].as<int>();
+        opp_range.steps = 10;
+    } else {
+	    opp_range.frequency_min = opps["frequency"]["min"].as<int>();
+	    opp_range.frequency_max = opps["frequency"]["max"].as<int>();
+	    opp_range.voltage_min = opps["voltage"]["min"].as<int>();
+	    opp_range.voltage_max = opps["voltage"]["max"].as<int>();
+        opp_range.steps = config["opps"]["steps"].as<int>();
+        opp_range.steps = 10;
+    }
 
 	// Get DRM device
 	int count = drmGetDevices(nullptr, 0);

@@ -80,14 +80,25 @@ Governor::Governor(Oberon& gpu) : gpu(gpu) {
 	// Load governor configuration from YAML
 	YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
 	YAML::Node governor_config = config["governor"];
-
-	polling_delay_ms = governor_config["polling_delay_ms"].as<int>();
-	up_threshold_high = governor_config["up_threshold_high"].as<int>();
-	up_threshold_low = governor_config["up_threshold_low"].as<int>();
-	down_threshold_high = governor_config["down_threshold_high"].as<int>();
-	down_threshold_low = governor_config["down_threshold_low"].as<int>();
-	gfx_temp_soft_lim = governor_config["gfx_temp_soft_lim"].as<int>();
-	gfx_temp_hard_lim = governor_config["gfx_temp_hard_lim"].as<int>();
-	soc_temp_hard_lim = governor_config["soc_temp_hard_lim"].as<int>();
-	overheat_reset_ms = governor_config["overheat_reset_ms"].as<int>();
+    if ( governor_config.IsDefined() ) {
+	   polling_delay_ms = governor_config["polling_delay_ms"].as<int>();
+	   up_threshold_high = governor_config["up_threshold_high"].as<int>();
+	   up_threshold_low = governor_config["up_threshold_low"].as<int>();
+	   down_threshold_high = governor_config["down_threshold_high"].as<int>();
+	   down_threshold_low = governor_config["down_threshold_low"].as<int>();
+	   gfx_temp_soft_lim = governor_config["gfx_temp_soft_lim"].as<int>();
+	   gfx_temp_hard_lim = governor_config["gfx_temp_hard_lim"].as<int>();
+	   soc_temp_hard_lim = governor_config["soc_temp_hard_lim"].as<int>();
+	   overheat_reset_ms = governor_config["overheat_reset_ms"].as<int>();
+	 }else{
+	   polling_delay_ms = 100;
+	   up_threshold_high = 85;
+	   up_threshold_low = 70;
+	   down_threshold_high = 45;
+	   down_threshold_low = 5;
+	   gfx_temp_soft_lim = 85;
+	   gfx_temp_hard_lim = 90;
+	   soc_temp_hard_lim = 90;
+	   overheat_reset_ms = 5000;    
+	 }
 }
