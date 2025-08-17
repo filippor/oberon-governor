@@ -32,7 +32,7 @@ void Governor::run() {
 		} else {
 			if (load >= up_threshold_low) {
 				 move = std::min(25,move + 1) ;
-				 if (_opp < _opp_count && move > 5) { // Require 5 consecutive high-load polls to scale up
+				 if (_opp < _opp_count && move > 3) { // Require 3 consecutive high-load polls to scale up
 					// Intelligent, granular load-based frequency control
 					if (load >= up_threshold_high) {
 							// Aggressive scale up
@@ -43,10 +43,10 @@ void Governor::run() {
 							_opp++;
 					}
 				 }
-			} else if (load <= down_threshold_high) {
+			} else if (load <= down_threshold_high && _opp > 0) {
 				// Gradual scale down
-				move = std::max(-15,move -1 ) ;
-				if(_opp > 0 && move < -10){// Require 10 consecutive low-load polls to scale down
+				move = std::max(-5,move -1 ) ;
+				if(_opp > 0 && move < -4){// Require 4 consecutive low-load polls to scale down
 					if (load <= down_threshold_low) {
 						// Aggressive scale down
 						_opp = 0;
