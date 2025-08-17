@@ -13,8 +13,8 @@ governor:
   polling_delay_ms:     50   #evaluation windows
   up_threshold_high:    85   #load to jump to maximum
   up_threshold_low:     70   #load to jump one step up
-  down_threshold_high:  45   #load to jump one step up
-  down_threshold_low:    5   #load to hump to min
+  down_threshold_high:  45   #load to jump one step down
+  down_threshold_low:    5   #load to jump to min
   gfx_temp_soft_lim:    80   #temperature to jump down 1 step
   gfx_temp_hard_lim:    90   #temperature to jump to min
   soc_temp_hard_lim:    90   #temperature to jump to min
