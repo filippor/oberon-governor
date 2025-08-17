@@ -1,4 +1,7 @@
 Forked from https://gitlab.com/mothenjoyer69/oberon-governor
+
+rpm dowloadable from https://copr.fedorainfracloud.org/coprs/filippor/bazzite/
+
 # Changes 
 -add spec file and publish on copr
 -implement multistep and change configuration file
