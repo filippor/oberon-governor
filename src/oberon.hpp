@@ -15,11 +15,12 @@
 #define OB_GRBM_REG			0x8010
 #define OB_GRBM_GUI_ACTIVE		BIT(31)
 
-#define OB_ACTIVE_SAMPLE_BUF_MS		100
+#define OB_ACTIVE_SAMPLE_BUF_MS		50
 #define OB_ACTIVE_SAMPLE_DELAY_MS	5
 
 class Oberon {
 private:
+	bool _verbose;
 	// Linux "drivers/gpu/drm/amd/include/kgd_pp_interface.h" gpu_metrics_v2_2 struct
 	struct GPUMetrics {
 		struct {
@@ -111,7 +112,7 @@ public:
 	Temperature getTemperature();
 	void setOpp(int opp);
 
-	Oberon();
+	Oberon(bool verbose);
 	~Oberon();
 };
 

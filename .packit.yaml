@@ -12,7 +12,6 @@ jobs:
   identifier: main
   trigger: commit
   branch: main
-  enable_net: true
   owner: filippor
   project: bazzite
   targets:
@@ -25,7 +24,6 @@ jobs:
   identifier: pull_request
   trigger: pull_request
   branch: main
-  enable_net: true
   targets:
     - fedora-stable
     - fedora-development
@@ -36,7 +34,6 @@ jobs:
   trigger: release
   owner: filippor
   project: bazzite
-  enable_net: true
   targets:
     - fedora-stable
     - fedora-development

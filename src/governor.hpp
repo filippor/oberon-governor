@@ -17,10 +17,11 @@ private:
 	int gfx_temp_hard_lim;
 	int soc_temp_hard_lim;
 	int overheat_reset_ms;
+	bool _verbose = false;
 public:
 	void run();
 	void stop();
-	Governor(class Oberon& gpu);
+	Governor(class Oberon& gpu, bool verbose);
 };
 
 #endif // GOVERNOR_GOVERNOR_HPP

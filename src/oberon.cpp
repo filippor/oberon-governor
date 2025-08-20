@@ -1,6 +1,7 @@
 #include <amdgpu.h>
 #include <chrono>
 #include <fcntl.h>
+#include <format>
 #include <vector>
 #include <filesystem>
 #include <iostream>
@@ -42,7 +43,6 @@ int Oberon::getLoad() {
 		busy_count += busy;
 	busy_sample_mutex.unlock();
 
-	// Calculate the percentage load correctly
 	return (busy_count * 100) / busy_sample_buffer.size();
 }
 
@@ -70,18 +70,20 @@ void Oberon::setOpp(int opp) {
 
 	int frequency = opp_range.frequency_min + static_cast<int>(opp * freq_step);
 	int voltage = opp_range.voltage_min + static_cast<int>(opp * volt_step);
+	if(_verbose) std::cout << std::format("[{}] Set frequency: {}Hz\t,voltage: {}mV" , std::chrono::system_clock::now(),frequency,voltage) << std::endl;
 
 	ctl << "vc 0 " + std::to_string(frequency) + " " + std::to_string(voltage) << std::endl;
 	ctl << "c" << std::endl;
 	this->_opp = opp;
 }
 
-const int MAX_DRM_DEVICES = 16; 
-Oberon::Oberon() {
+const int MAX_DRM_DEVICES = 4; 
+Oberon::Oberon(bool verbose): _verbose(verbose) {
 	// Dynamically load OPP range from the YAML file
 	YAML::Node config = YAML::LoadFile("/etc/oberon-config.yaml");
     YAML::Node opps = config["opps"];
     if (opps.IsSequence()) {
+		if(_verbose) std::cout << std::format("[{}] Using old config style", std::chrono::system_clock::now()) << std::endl;
         opp_range.frequency_min = opps[0]["frequency"][0]["min"].as<int>();
 	    opp_range.frequency_max = opps[0]["frequency"][1]["max"].as<int>();
 	    opp_range.voltage_min = opps[1]["voltage"][0]["min"].as<int>();
@@ -93,11 +95,11 @@ Oberon::Oberon() {
 	    opp_range.voltage_min = opps["voltage"]["min"].as<int>();
 	    opp_range.voltage_max = opps["voltage"]["max"].as<int>();
         opp_range.steps = config["opps"]["steps"].as<int>();
-        opp_range.steps = 10;
     }
 
 	// Get DRM device
 	int count = drmGetDevices(nullptr, 0);
+	if(_verbose) std::cout << std::format("[{}] Found {} DRM devices", std::chrono::system_clock::now(),count) << std::endl;
 	if (count <= 0)
 		throw std::runtime_error("Failed to detect DRM devices");
 	if (count > MAX_DRM_DEVICES) {
@@ -139,11 +141,14 @@ Oberon::Oberon() {
 		if (found)
 			break;
 	}
+
+	
 	drmFreeDevices(devices, count);
 	if (!found)
 		throw std::runtime_error("Failed to open DRM device");
 
 	// Initialize AMDGPU device
+	if(_verbose) std::cout << std::format("[{}] Found Oberon devices" , std::chrono::system_clock::now()) << std::endl;
 	uint32_t libdrm_major, libdrm_minor;
 	if (amdgpu_device_initialize(fd, &libdrm_major, &libdrm_minor, &amdgpu_handle)) {
 		close(fd);

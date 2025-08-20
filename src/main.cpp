@@ -8,7 +8,11 @@
 const std::string help_text =
 	"oberon-governor v" + std::string(GOVERNOR_VERSION) + "\n"
 	"This program takes no arguments and must be run as root on an AMD Oberon system, on a systemd distro it can be run through oberon-governor.service\n"
-	"Currently the only tested system is the ASRock BC-250.\n";
+	"Currently the only tested system is the ASRock BC-250.\n"
+	"Option:\n"
+	"-h,--help\t:print this help message\n"
+	"-v,--verbose\t:print all state change\n"
+	"\n";
 
 Governor* g;
 
@@ -36,6 +40,7 @@ void stop(int signal) {
 }
 
 int main(int argc, char *argv[]) {
+	bool verbose = false;
 	for (int i = 1; i < argc; i++) {
 		bool found = false;
 
@@ -50,14 +55,22 @@ int main(int argc, char *argv[]) {
 			std::cout << help_text;
 			std::exit(EXIT_SUCCESS);
 		}
-
+		// Verbose
+		for (const std::string a : {"-v", "--verbose"}) {
+			if (a == argv[i]) {
+				verbose = true;
+				break;
+			}
+		}
 		// Unknown argument
-		std::cout << std::format("Unknown argument '{}'", argv[i]) << std::endl;
-		std::exit(EXIT_FAILURE);
+		if(!verbose){
+			std::cout << std::format("Unknown argument '{}'", argv[i]) << std::endl;
+			std::exit(EXIT_FAILURE);
+		}
 	}
 
-	Oberon oberon;
-	Governor governor(oberon);
+	Oberon oberon(verbose);
+	Governor governor(oberon,verbose);
 
 	g = &governor;
 	for (const int s : { SIGHUP, SIGINT, SIGQUIT, SIGTERM })
